@@ -19,23 +19,50 @@ def main():
 
 
 
-def getBet(maxBet: int) -> Optional[int]:
-    pass
+def getBet(maxBet: int, input=None) -> Optional[int]:
+    bet = input
+    if input is None:
+        bet = input('> ')
+    if 0 < bet <= maxBet:
+        return bet
+    else:
+        print('Bad bet!')
+
 
 def getDeck() -> 'list[tuple]':
-    pass
+    deck = []
+    for s in (DIAMONDS, HEARTS, SPADES, CLUBS):
+        for n in range(2, 11):
+            deck.append((str(n), s))
+        for c in ('J', 'Q', 'K', 'A'):
+            deck.append((c, s))
+    return deck
+
 
 def displayHands(playerHand: 'list[tuple]', dealerHand: 'list[tuple]', showDealerHand: bool) -> None:
     pass
 
+
 def getHandValue(cards: 'list[tuple]') -> int:
-    pass
+    val = 0
+    for i in cards:
+        for c in i[0]:
+            if c == 'J' or c == 'Q' or c == 'K':
+                val += 10
+            elif c == 'A':
+                val += 1
+            else:
+                val += int(c)
+    return val
+            
 
 def displayCards(cards: 'list[tuple]') -> None:
     pass
 
+
 def getMove(playerHand: 'list[tuple]', money: int) -> str:
     pass
+
 
 if __name__ == '__main__':
     main()
