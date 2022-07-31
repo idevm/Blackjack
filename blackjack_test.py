@@ -1,16 +1,20 @@
 import unittest
+
+from pytest import skip
 import blackjack
 
 class BlackjackTests(unittest.TestCase):
     def setUp(self) -> None:
         self.bj = blackjack
 
+    @unittest.skip
     def test_getBet_ValidInput_return_bet(self):
         maxBet = 500
         for i in [1, 5, 10, 200, 500]:
             with self.subTest(i):
                 self.assertEqual(self.bj.getBet(maxBet, i), i)
-
+    
+    @unittest.skip
     def test_getBet_invalidInput_return_None(self):
         maxBet = 500
         for i in [0, -5, 1000, 501]:
