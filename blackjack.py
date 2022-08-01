@@ -1,8 +1,6 @@
 'Блэкджек (двадцать одно)'
 
 import random, sys
-from typing import Optional
-from webbrowser import get
 
 DIAMONDS: str = chr(9829)
 HEARTS: str  = chr(9830)
