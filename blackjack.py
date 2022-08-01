@@ -24,58 +24,47 @@ def main():
         if money <= 0:
             print('Вы банкрот!\nХорошо, что это были не настоящие деньги!\nСпасибо за игру!')
             sys.exit()
-
-        print('Деньги: ', money)
-        bet = getBet(money)
-
-        deck = getDeck()
-        dealerHand = [deck.pop(), deck.pop()]
-        playerHand = [deck.pop(), deck.pop()]
-
+        print('Баланс: ', money)
+        bet: int = getBet(money)
+        if bet == 0:
+            print('Спасибо за игру!')
+            sys.exit()
+        deck: list[tuple] = getDeck()
+        dealerHand: list[tuple] = [deck.pop(), deck.pop()]
+        playerHand: list[tuple] = [deck.pop(), deck.pop()]
         print('Ставка: ', bet)
         while True:
             displayHands(playerHand, dealerHand, False)
             print()
-
             if getHandValue(playerHand) > 21:
                 break
-
-            move = getMove(playerHand, money - bet)
-
+            move: str = getMove(playerHand, money - bet)
             if move == '2':
-                additionalBet = getBet(min(bet, (money - bet)))
+                additionalBet: int = getBet(min(bet, (money - bet)))
                 bet += additionalBet
                 print(f'Ставка выросла до {bet}')
                 print(f'Ставка: {bet}')
-
             if move in ('Е', '2'):
-                newCard = deck.pop()
+                newCard: tuple[str] = deck.pop()
                 rank, suit = newCard
                 print(f'Вы взяли {rank} {suit}.')
                 playerHand.append(newCard)
-
                 if getHandValue(playerHand) > 21:
                     continue
-
             if move in ('Х', '2'):
                 break
-
         if getHandValue(playerHand) <= 21:
             while getHandValue(dealerHand) < 17:
-                print('Дилер берет еще...')
+                print('Дилер берет еще карту...')
                 dealerHand.append(deck.pop())
                 displayHands(playerHand, dealerHand, False)
-
                 if getHandValue(dealerHand) > 21:
                     break
                 input('Нажмите Enter для продолжения...')
                 print('\n\n')
-
         displayHands(playerHand, dealerHand, True)
-
-        playerValue = getHandValue(playerHand)
-        dealerValue = getHandValue(dealerHand)
-
+        playerValue: int = getHandValue(playerHand)
+        dealerValue: int = getHandValue(dealerHand)
         if dealerValue > 21:
             print(f'Дилер проиграл! Вы выиграли ${bet}!')
             money += bet
@@ -87,28 +76,32 @@ def main():
             money += bet
         elif playerValue == dealerValue:
             print('Ничья, ставка возвращается вам.')
-
         input('Нажмите Enter для продолжения...')
         print('\n\n')
 
 
-def getBet(maxBet: int) -> Optional[int]:
+def getBet(maxBet: int, input=None) -> int:
     while True:
-        print(f'Ваша ставка? (1-{maxBet}, или (в)ыход)')
-        bet = input('> ').upper().strip()
-        if bet == 'В':
-            print('Спасибо за игру!')
-            sys.exit()
-        if not bet.isdecimal():
-            continue
-
-        bet = int(bet)
-        if 1 <= bet <= maxBet:
-            return bet
+        print(f'Ваша ставка? (1-{maxBet}, или 0 - выход)')
+        if  not input:
+            inputStr: str = input('> ').upper().strip()
+            if not inputStr.isdecimal():
+                continue
+            bet = int(inputStr)
+            if 0 <= bet <= maxBet:
+                return bet
+        else:
+            if not input.isdecimal():
+                return 0
+            bet = int(input)
+            if 0 <= bet <= maxBet:
+                return bet
+            else:
+                return 0
 
 
 def getDeck() -> 'list[tuple]':
-    deck = []
+    deck: list[tuple] = []
     for s in (DIAMONDS, HEARTS, SPADES, CLUBS):
         for n in range(2, 11):
             deck.append((str(n), s))
@@ -131,11 +124,10 @@ def displayHands(playerHand: 'list[tuple]', dealerHand: 'list[tuple]', showDeale
 
 
 def getHandValue(cards: 'list[tuple]') -> int:
-    value = 0
-    numberOfAces = 0
-
+    value: int = 0
+    numberOfAces: int = 0
     for card in cards:
-        rank = card[0]
+        rank: str = card[0]
         if rank == 'A':
             numberOfAces += 1
         elif rank in ('K', 'Q', 'J'):
@@ -143,16 +135,15 @@ def getHandValue(cards: 'list[tuple]') -> int:
         else:
             value += int(rank)
     value += numberOfAces
-    for i in range(numberOfAces):
+    for _ in range(numberOfAces):
         if value + 10 <= 21:
             value += 10
     return value
             
 
 def displayCards(cards: 'list[tuple]') -> None:
-    rows = ['', '', '', '', '']
-
-    for i, card in enumerate(cards):
+    rows: list[str] = ['', '', '', '', '']
+    for _, card in enumerate(cards):
         rows[0] += ' ___   '
         if card == BACKSIDE:
             rows[1] += '|## |  '
@@ -163,18 +154,16 @@ def displayCards(cards: 'list[tuple]') -> None:
             rows[1] += f'|{rank.ljust(2)} |  '
             rows[2] += f'| {suit} |  '
             rows[3] += f'|_{rank.rjust(2, "_")}|  '
-
     for row in rows:
         print(row)
 
 
 def getMove(playerHand: 'list[tuple]', money: int) -> str:
     while True:
-        moves = ['(е)ще', '(х)ватит']
+        moves: list[str] = ['(е)ще', '(х)ватит']
         if len(playerHand) == 2 and money > 0:
             moves.append('у(2)ить')
-
-        movePrompt = ', '.join(moves) + '> '
+        movePrompt: str = ', '.join(moves) + '> '
         move = input(movePrompt).upper()
         if move in ('Е', 'Х'):
             return move
