@@ -1,6 +1,4 @@
 import unittest
-
-from pytest import skip
 import blackjack
 
 class BlackjackTests(unittest.TestCase):
